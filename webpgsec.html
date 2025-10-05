@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Weather for Secondary School</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap');
+        body {
+            background-color: #0c1445; color: #f0f0f0; font-family: 'Baloo 2', cursive;
+            margin: 0; padding: 20px; line-height: 1.6;
+        }
+        .container {
+            max-width: 900px; margin: 0 auto; background-color: #1a237e;
+            border-radius: 15px; padding: 20px 40px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        h1, h2 { color: #ffeb3b; text-align: center; }
+        h1 { font-size: 2.8em; }
+        h2 { font-size: 1.8em; border-bottom: 2px solid #ffeb3b; padding-bottom: 5px; margin-top: 40px;}
+        p, li { font-size: 1.1em; }
+        strong { color: #ffa726; }
+        
+        /* --- Alternating Layout Styles for Image/Text Pairs --- */
+        .story-panel {
+            background-color: #283593; margin: 40px 0; padding: 20px;
+            border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex; align-items: center; gap: 25px;
+        }
+        .panel-right { flex-direction: row-reverse; }
+        .panel-image { flex-shrink: 0; width: 40%; }
+        .panel-image img { 
+            width: 100%; height: auto; border-radius: 8px; border: 3px solid #ffeb3b; display: block; 
+        }
+        .panel-text { text-align: left; }
+
+        /* --- Video Specific Styling (Large and at top of its panel) --- */
+        .video-panel {
+            background-color: #283593; margin: 40px 0; padding: 20px;
+            border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center; /* Center the video */
+        }
+        .video-panel video {
+            max-width: 100%; /* Make video large */
+            height: auto; 
+            border-radius: 8px; 
+            border: 3px solid #ffeb3b; 
+            display: block; /* Ensures it takes up its own line */
+            margin: 0 auto 20px auto; /* Centers video and adds space below */
+        }
+        .video-panel .panel-text p {
+            text-align: left; /* Keep text left aligned even if video is centered */
+        }
+
+        /* --- Sticky Button Styles --- */
+        #sticky-quiz-container {
+            position: fixed; bottom: 20px; left: 20px; z-index: 100;
+        }
+        .interactive-button {
+            background-color: #ffa726; color: #fff; border: none; padding: 16px 28px;
+            font-family: 'Baloo 2', cursive; font-size: 1.25em; border-radius: 50px; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: all 0.2s;
+        }
+        .interactive-button:hover { background-color: #fb8c00; transform: scale(1.05); }
+
+        /* --- Quiz Pop-up Styles --- */
+        .modal-overlay {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.7);
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: #283593; padding: 30px; border: 4px solid #ffeb3b;
+            border-radius: 20px; width: 90%; max-width: 600px;
+            text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .close-button {
+            position: absolute; top: 10px; right: 20px;
+            color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10;
+        }
+        #score-counter { color: #ffa726; font-size: 0.8em; vertical-align: middle; }
+        #questionText { font-size: 1.4em; color: #fff; min-height: 80px; }
+        #answer-buttons button {
+            display: block; width: 100%; text-align: left; padding: 12px; margin: 8px 0;
+            background-color: #1a237e; color: #fff; border: 1px solid #ffeb3b; border-radius: 8px;
+            font-family: 'Baloo 2', cursive; font-size: 1.1em; cursor: pointer; transition: background-color 0.2s;
+        }
+        #answer-buttons button:hover:not(:disabled) { background-color: #3949ab; }
+        #answer-buttons button.correct { background-color: #2e7d32; border-color: #66bb6a; }
+        #answer-buttons button.incorrect { background-color: #c62828; border-color: #ef5350; }
+        #feedbackText { margin-top: 15px; font-size: 1.2em; min-height: 30px; font-weight: bold; }
+
+        /* Confetti Styles */
+        .confetti {
+            position: absolute; width: 8px; height: 16px; opacity: 0.7;
+            animation: fall 3s linear forwards;
+        }
+
+        #back-button-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+        }
+
+        #backBtn {
+            font-size: 1.1em;
+            padding: 12px 24px;
+        }
+
+        #backBtn:hover {
+            background-color: #00acc1;
+        }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div id="back-button-container">
+        <button id="backBtn" class="interactive-button">⬅️ Back to Home</button>
+    </div>
+    <div class="container">
+        <h1>Space Weather: Earth's Cosmic Shield</h1>
+        <p>Solar events are more than just a light show. They are powerful releases of energy and matter from the Sun that can have significant effects on Earth. Let's explore the science behind these phenomena.</p>
+
+        <div class="video-panel">
+            <video autoplay loop muted controls>
+                <source src="Sun_Solar_Flare.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="panel-text">
+                <h2>Our Star: A Ball of Plasma</h2>
+                <p>The Sun isn't a ball of fire; it's a giant ball of **plasma**. This is the fourth state of matter, where gases are so hot that electrons are stripped from atoms. This superheated, electrically charged environment is what creates the Sun's powerful magnetic fields, which twist and snap in a process called **magnetic reconnection** to create solar events. Observing these dynamic processes helps scientists understand space weather.</p>
+            </div>
+        </div>
+        
+        <div class="story-panel panel-right">
+            <div class="panel-image"><img src="earth_magnetosphere.png" alt="Diagram of Earth's magnetosphere deflecting solar wind"></div>
+            <div class="panel-text">
+                <h2>Earth's Force Field: The Magnetosphere</h2>
+                <p>Luckily, Earth has a secret weapon: the **magnetosphere**. Generated by the molten iron core of our planet, it's an invisible magnetic field that surrounds us. Think of it as a protective bubble that deflects most of the harmful charged particles from the Sun's constant solar wind, channeling them around our planet and keeping our crucial technologies and life forms safe.</p>
+            </div>
+        </div>
+        
+        <div class="story-panel panel-left">
+            <div class="panel-image"><img src="satellite_disruption.png" alt="Illustration of satellites experiencing disruption from space weather effects"></div>
+            <div class="panel-text">
+                <h2>Case Study: A Pilot's Story</h2>
+                <p>Captain Eva is flying a plane over the Atlantic. Suddenly, her high-frequency radio goes silent. What's happening? A strong solar flare erupted from the Sun just 8 minutes ago. The intense radiation travels at the speed of light and hit Earth's upper atmosphere (the ionosphere), causing a radio blackout and disrupting GPS signals. She is trained for this, but it shows how events 93 million miles away can affect us right here on Earth.</p>
+            </div>
+        </div>
+        
+        <div class="story-panel panel-right">
+             <div class="panel-image"><img src="flare_vs_cme.png" alt="Diagram comparing solar flares and CMEs, their travel times, and impacts"></div>
+            <div class="panel-text">
+                <h2>Flares vs. CMEs: Radiation and Plasma</h2>
+                <p>It's important to know the difference between the two main types of solar storms and their distinct impacts:</p>
+                <ul>
+                    <li><strong>Solar Flares:</strong> An intense burst of **radiation** (X-rays, UV light) that reaches Earth at light speed (about 8 minutes). These are primarily responsible for radio blackouts.</li>
+                    <li><strong>Coronal Mass Ejections (CMEs):</strong> A massive cloud of **plasma** (charged particles) that travels slower, taking 1-3 days to reach Earth. The impact of CMEs can cause geomagnetic storms, leading to beautiful auroras and potential power grid disruptions.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="sticky-quiz-container">
+        <button id="quizButton" class="interactive-button">Start Quiz! 📝</button>
+    </div>
+
+    <div id="quizModal" class="modal-overlay">
+        <div class="modal-content">
+            <span id="closeBtn" class="close-button">&times;</span>
+            <h2 id="question-header">Space Weather Quiz <span id="score-counter"></span></h2>
+            <p id="questionText">Loading question...</p>
+            <div id="answer-buttons"></div>
+            <p id="feedbackText"></p>
+        </div>
+    </div>
+    
+    <script>
+        const backButton = document.getElementById('backBtn');
+        backButton.onclick = function() {
+           window.location.href = "index.html";
+        }
+        const questions = [
+            { question: "What travels fastest from the Sun to Earth during a solar event?", answers: [ { text: "The Plasma Cloud (CME)", correct: false }, { text: "The Radiation (Solar Flare)", correct: true }, { text: "The Solar Wind", correct: false } ] },
+            { question: "What is Earth's natural defense against solar storms called?", answers: [ { text: "The Atmosphere", correct: false }, { text: "The Ionosphere", correct: false }, { text: "The Magnetosphere", correct: true } ] },
+            { question: "What spectacular light show is created when CMEs interact with Earth's poles?", answers: [ { text: "The Aurora", correct: true }, { text: "A Sun Halo", correct: false }, { text: "A Rainbow", correct: false } ] },
+            { question: "What problem does a solar flare's radiation cause for pilots?", answers: [ { text: "Engine failure", correct: false }, { text: "Radio blackouts", correct: true }, { text: "Turbulence", correct: false } ] },
+            { question: "How long does the plasma from a CME typically take to reach Earth?", answers: [ { text: "8 minutes", correct: false }, { text: "1-3 days", correct: true }, { text: "About a month", correct: false } ] },
+            { question: "The process where the Sun's tangled magnetic fields snap and release energy is called:", answers: [ { text: "Nuclear Fusion", correct: false }, { text: "Magnetic Reconnection", correct: true }, { text: "Solar Gravitation", correct: false } ] }
+        ];
+
+        const quizButton = document.getElementById('quizButton');
+        const modal = document.getElementById('quizModal');
+        const closeButton = document.getElementById('closeBtn');
+        const questionText = document.getElementById('questionText');
+        const answerButtonsContainer = document.getElementById('answer-buttons');
+        const feedbackText = document.getElementById('feedbackText');
+        const questionHeader = document.getElementById('question-header');
+        const scoreCounter = document.getElementById('score-counter');
+
+        let shuffledQuestions, currentQuestionIndex, score;
+
+        quizButton.onclick = () => {
+            score = 0;
+            shuffledQuestions = questions.sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            modal.style.display = 'flex';
+            updateScoreCounter();
+            setNextQuestion();
+        };
+
+        closeButton.onclick = () => modal.style.display = 'none';
+        window.onclick = (event) => { if (event.target == modal) { modal.style.display = 'none'; } };
+
+        function setNextQuestion() {
+            resetState();
+            if (shuffledQuestions.length > currentQuestionIndex) {
+                showQuestion(shuffledQuestions[currentQuestionIndex]);
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function showQuestion(question) {
+            questionHeader.innerHTML = `Question ${currentQuestionIndex + 1} <span id="score-counter">${score} / ${questions.length}</span>`;
+            questionText.innerText = question.question;
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.addEventListener('click', () => selectAnswer(button, answer.correct));
+                answerButtonsContainer.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            feedbackText.innerText = '';
+            while (answerButtonsContainer.firstChild) {
+                answerButtonsContainer.removeChild(answerButtonsContainer.firstChild);
+            }
+        }
+
+        function selectAnswer(selectedButton, isCorrect) {
+            if (isCorrect) {
+                score++;
+                feedbackText.innerText = "Correct! Well done.";
+                feedbackText.style.color = "#66bb6a";
+            } else {
+                feedbackText.innerText = "Not quite, but good try!";
+                feedbackText.style.color = "#ef5350";
+            }
+            updateScoreCounter();
+            
+            Array.from(answerButtonsContainer.children).forEach(button => {
+                button.disabled = true;
+                const correct = questions[currentQuestionIndex].answers.find(a => a.correct);
+                if(button.innerText === correct.text){ button.classList.add('correct'); }
+            });
+            if(!isCorrect){ selectedButton.classList.add('incorrect'); }
+            
+            const nextButton = document.createElement('button');
+            nextButton.innerText = 'Next Question →';
+            nextButton.classList.add('interactive-button');
+            nextButton.style.width = '100%';
+            nextButton.onclick = () => { currentQuestionIndex++; setNextQuestion(); };
+            answerButtonsContainer.appendChild(nextButton);
+        }
+
+        function updateScoreCounter() {
+            const counter = document.querySelector('#quizModal #score-counter');
+            if(counter) counter.textContent = `${score} / ${questions.length}`;
+        }
+
+        function showFinalScore() {
+            questionHeader.innerHTML = `Quiz Complete! <span id="score-counter">${score} / ${questions.length}</span>`;
+            const percentage = Math.round((score / questions.length) * 100);
+            let finalMessage = `You scored ${score} out of ${questions.length} (${percentage}%).\n\n`;
+            
+            if (percentage >= 80) {
+                finalMessage += "🎉 Excellent! You're a space weather expert! 🎉";
+                createConfetti();
+            } else if (percentage >= 50) {
+                finalMessage += "Good Job! You've got a great grasp on the basics.";
+            } else {
+                finalMessage += "Better luck next time! Review the page and try again to become a pro.";
+            }
+            questionText.innerText = finalMessage;
+            
+            const tryAgainBtn = document.createElement('button');
+            tryAgainBtn.innerText = 'Try Again';
+            tryAgainBtn.classList.add('interactive-button');
+            tryAgainBtn.style.width = '100%';
+            tryAgainBtn.onclick = () => {
+                 score = 0;
+                 currentQuestionIndex = 0;
+                 setNextQuestion();
+            };
+            answerButtonsContainer.appendChild(tryAgainBtn);
+        }
+
+        function createConfetti() {
+            const colors = ['#ffeb3b', '#ffa726', '#ff4d4d', '#4dd0e1', '#66bb6a'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -20 + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                modal.querySelector('.modal-content').appendChild(confetti);
+
+                setTimeout(() => {
+                    confetti.remove();
+                }, 4000); // Remove after animation
+            }
+        }
+    </script>
+</body>
+</html>

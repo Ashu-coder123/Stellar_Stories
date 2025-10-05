@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Weather for High School</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap');
+        body {
+            background-color: #0c1445; color: #f0f0f0; font-family: 'Baloo 2', cursive;
+            margin: 0; padding: 20px; line-height: 1.6;
+        }
+        .container {
+            max-width: 900px; margin: 0 auto; background-color: #1a237e;
+            border-radius: 15px; padding: 20px 40px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        h1, h2 { color: #ffeb3b; text-align: center; }
+        h1 { font-size: 2.8em; }
+        h2 { font-size: 1.8em; border-bottom: 2px solid #ffeb3b; padding-bottom: 5px; margin-top: 40px;}
+        p, li { font-size: 1.1em; }
+        strong { color: #ffa726; }
+        
+        /* Alternating Layout Styles */
+        .story-panel {
+            background-color: #283593; margin: 40px 0; padding: 20px;
+            border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex; align-items: center; gap: 25px;
+        }
+        .panel-right { flex-direction: row-reverse; }
+        .panel-image { flex-shrink: 0; width: 40%; }
+        .panel-image img { 
+            width: 100%; height: auto; border-radius: 8px; border: 3px solid #ffeb3b; display: block; 
+        }
+        .panel-text { text-align: left; }
+        
+        /* Accordion Styles */
+        .accordion-button {
+            background-color: #283593; color: #ffeb3b; cursor: pointer; padding: 18px;
+            width: 100%; border: none; text-align: left; outline: none; font-size: 1.2em;
+            font-family: 'Baloo 2', cursive; transition: background-color 0.4s;
+            border-radius: 8px; margin-top: 10px; position: relative;
+        }
+        .accordion-button:after {
+            content: '+'; color: #ffeb3b; font-weight: bold; position: absolute;
+            right: 20px; font-size: 1.3em;
+        }
+        .accordion-button.active:after { content: "−"; }
+        .accordion-button:hover, .accordion-button.active { background-color: #3949ab; }
+        .accordion-panel {
+            padding: 0 18px; background-color: #1a237e; max-height: 0;
+            overflow: hidden; transition: max-height 0.3s ease-out;
+            border-radius: 0 0 8px 8px;
+        }
+        .accordion-panel p { padding-top: 15px; }
+
+        /* Slider Graph Styles */
+        #graph-container {
+            background-color: #283593; padding: 20px; border-radius: 15px; margin-top: 40px;
+        }
+        #slider-label { text-align: center; font-size: 1.1em; color: #e8eaf6; }
+        #slider-value-display {
+            text-align: center; font-size: 1.5em; color: #ffa726;
+            margin-top: 10px; font-weight: bold; min-height: 30px;
+        }
+        #year-slider {
+            width: 100%; cursor: pointer; margin-top: 10px; margin-bottom: 20px;
+            -webkit-appearance: none; appearance: none; background: transparent;
+        }
+        #year-slider::-webkit-slider-runnable-track {
+            width: 100%; height: 8px; cursor: pointer;
+            background: #1a237e; border-radius: 5px; border: 1px solid #ffeb3b;
+        }
+        #year-slider::-moz-range-track {
+            width: 100%; height: 8px; cursor: pointer;
+            background: #1a237e; border-radius: 5px; border: 1px solid #ffeb3b;
+        }
+        #year-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; border: 2px solid #0c1445; height: 24px; width: 24px;
+            border-radius: 50%; background: #ffeb3b; cursor: pointer;
+            margin-top: -9px; box-shadow: 0 0 5px rgba(255, 235, 59, 0.7);
+        }
+        #year-slider::-moz-range-thumb {
+            border: 2px solid #0c1445; height: 24px; width: 24px;
+            border-radius: 50%; background: #ffeb3b; cursor: pointer;
+            box-shadow: 0 0 5px rgba(255, 235, 59, 0.7);
+        }
+
+        /* Back Button Styles */
+        .interactive-button {
+            background-color: #ffa726; color: #fff; border: none; padding: 16px 28px;
+            font-family: 'Baloo 2', cursive; font-size: 1.25em; border-radius: 50px; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: all 0.2s;
+        }
+        #back-button-container {
+            position: fixed; top: 20px; left: 20px; z-index: 200;
+        }
+        #backBtn {
+            font-size: 1.1em; padding: 12px 24px;
+        }
+        #backBtn:hover {
+            background-color: #00acc1; transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="back-button-container">
+        <button id="backBtn" class="interactive-button">⬅️ Back to Home</button>
+    </div>
+    <div class="container">
+        <h1>The Dynamics of Space Weather and Societal Risk</h1>
+        <p>Space weather is a fascinating field of astrophysics with profound implications for our technology-dependent society. Understanding it requires looking at the Sun's magnetic cycles and the physics of plasma.</p>
+
+        <div class="story-panel panel-left">
+            <div class="panel-image"><img src="solar_cycle_sunspots.png" alt="Diagram showing the 11-year solar cycle with sunspot number and magnetic field flip"></div>
+            <div class="panel-text">
+                <h2>The Solar Cycle and Sunspots</h2>
+                <p>The Sun's activity is not constant; it ebbs and flows in a roughly **11-year cycle**, driven by the flipping of the Sun's magnetic poles. Periods of high activity, known as the **solar maximum**, are characterized by an increase in **sunspots**. These are cooler, darker spots on the Sun's surface that are areas of intense and complex magnetic activity—the primary sources of solar flares and CMEs.</p>
+            </div>
+        </div>
+
+        <div class="story-panel panel-right">
+            <div class="panel-image"><img src="flare_vs_cme.png" alt="Diagram comparing solar flares and CMEs, their travel times, and impacts"></div>
+            <div class="panel-text">
+                <h2>Flares vs. CMEs: A Race to Earth</h2>
+                <p>It's important to distinguish between the two main events:</p>
+                <ul>
+                    <li><strong>Solar Flares:</strong> A burst of electromagnetic radiation (like X-rays). This radiation travels at the speed of light, reaching Earth in about **8 minutes**. Its primary effect is radio blackouts in the ionosphere.</li>
+                    <li><strong>Coronal Mass Ejections (CMEs):</strong> A massive cloud of magnetized plasma. This cloud travels slower, taking **1 to 3 days** to reach Earth. While slower, it carries the kinetic energy that can severely disrupt our magnetosphere and power grid.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="story-panel panel-left">
+            <div class="panel-image"><img src="gic_power_grid.png" alt="Illustration showing a CME inducing Geomagnetically Induced Currents (GICs) in a power grid"></div>
+            <div class="panel-text">
+                <h2>The Carrington Event: A Story from 1859</h2>
+                <p>In the early morning hours of September 1, 1859, a CME from a colossal solar flare reached Earth in a record 17.6 hours. The resulting geomagnetic storm was so powerful it caused telegraph systems—the internet of the 19th century—to fail and even catch fire. Auroras were seen as far south as the Caribbean. It remains the benchmark for a worst-case scenario space weather event.</p>
+            </div>
+        </div>
+
+        <h2>Explore the Risks</h2>
+        <div class="accordion">
+            <button class="accordion-button">⚡ Power Grid Collapse</button>
+            <div class="accordion-panel"><p>The greatest risk from a CME is to our power grids. When the CME's magnetic field interacts with our magnetosphere, it causes rapid magnetic field changes on the ground. According to <strong>Faraday's law of induction</strong>, this induces quasi-DC currents in long conductors like transmission lines. These <strong>Geomagnetically Induced Currents (GICs)</strong> can flow into high-voltage transformers, causing them to overheat and fail, potentially leading to continent-wide blackouts that could last for weeks or months.</p></div>
+            <button class="accordion-button">🛰️ Satellite Damage and Disruption</button>
+            <div class="accordion-panel"><p>Our entire global information infrastructure relies on satellites for GPS, communications, and weather monitoring. During a solar storm, energetic particles can damage solar panels and degrade internal electronics (single-event upsets). Increased atmospheric drag on low-Earth orbit satellites can cause their orbits to decay faster, requiring course corrections or leading to premature re-entry.</p></div>
+            <button class="accordion-button">💸 Economic and Societal Impact</button>
+            <div class="accordion-panel"><p>The loss of power, communications, and navigation would bring the global economy to a halt. Financial transactions, supply chains, transportation, and even basic services like water pumping and sanitation would be crippled. A 2013 report from Lloyd's of London estimated the cost of a Carrington-level event to the U.S. economy alone could be up to **$2.6 trillion**.</p></div>
+        </div>
+        
+        <h2>Visualize the Solar Cycle</h2>
+        <div id="graph-container">
+            <div id="slider-label">Slide the bar to see the sunspot number for a specific year.</div>
+            <div id="slider-value-display">Year: 1954 | Approx. Sunspots: 6.5</div>
+            <input type="range" min="1954" max="2024" value="1954" class="slider" id="year-slider">
+            <canvas id="solarCycleChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Back Button script
+        const backButton = document.getElementById('backBtn');
+        backButton.onclick = function() {
+            window.location.href = "index.html";
+        }
+
+        // Accordion script
+        const acc = document.getElementsByClassName("accordion-button");
+        for (let i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                const panel = this.nextElementSibling;
+                if (panel.style.maxHeight) { panel.style.maxHeight = null; } 
+                else { panel.style.maxHeight = panel.scrollHeight + "px"; } 
+            });
+        }
+
+        // Slider Graph Script
+        const solarData = {
+            years: [1954, 1955, 1956, 1957, 1958, 1959, 1960, 1961, 1962, 1963, 1964, 1965, 1966, 1967, 1968, 1969, 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024],
+            sunspots: [6.5, 55.4, 201.2, 269.3, 285.0, 220.1, 159.0, 75.8, 54.3, 39.8, 15.1, 23.1, 68.9, 134.0, 150.3, 149.7, 149.0, 96.6, 99.0, 55.4, 49.6, 22.8, 18.7, 40.5, 131.0, 220.1, 218.9, 198.9, 163.6, 95.8, 64.3, 24.7, 19.3, 44.2, 142.6, 211.1, 191.8, 203.3, 133.5, 77.2, 45.9, 25.5, 12.8, 32.1, 93.0, 130.6, 170.4, 163.6, 150.9, 94.0, 64.3, 45.0, 24.1, 12.1, 4.2, 4.8, 24.8, 80.8, 88.3, 94.0, 119.2, 69.8, 38.6, 20.2, 9.8, 5.5, 12.9, 39.8, 114.4, 163.4, 120.0]
+        };
+        const slider = document.getElementById('year-slider');
+        const valueDisplay = document.getElementById('slider-value-display');
+        const ctx = document.getElementById('solarCycleChart').getContext('2d');
+        let solarChart;
+
+        function updateRedDot(year) {
+            const index = solarData.years.indexOf(parseInt(year));
+            const redDotData = new Array(solarData.years.length).fill(null);
+            if (index !== -1) { redDotData[index] = solarData.sunspots[index]; }
+            solarChart.data.datasets[1].data = redDotData;
+            solarChart.update('none');
+        }
+
+        window.onload = function() {
+            solarChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: solarData.years,
+                    datasets: [
+                        {
+                            label: 'Sunspot Number', data: solarData.sunspots,
+                            borderColor: '#ffeb3b', backgroundColor: 'rgba(255, 235, 59, 0.2)',
+                            borderWidth: 2, fill: true, pointRadius: 0, tension: 0.4
+                        },
+                        {
+                            label: 'Selected Year', data: [],
+                            backgroundColor: '#c62828', borderColor: '#ef5350',
+                            pointRadius: 6, pointHoverRadius: 8, showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Frequency of Disturbance (Sunspot Number)', color: '#e8eaf6' },
+                            ticks: { color: '#e8eaf6' }, grid: { color: 'rgba(232, 234, 246, 0.1)' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Year', color: '#e8eaf6' },
+                            ticks: { color: '#e8eaf6' }, grid: { color: 'rgba(232, 234, 246, 0.1)' }
+                        }
+                    },
+                    plugins: { legend: { display: false } },
+                    interaction: { intersect: false, mode: 'index' }
+                }
+            });
+            updateRedDot(slider.value);
+        };
+
+        slider.addEventListener('input', function() {
+            const year = parseInt(this.value);
+            const index = solarData.years.indexOf(year);
+            if (index !== -1) {
+                const sunspots = solarData.sunspots[index];
+                valueDisplay.textContent = `Year: ${year} | Approx. Sunspots: ${sunspots}`;
+                updateRedDot(year);
+            }
+        });
+    </script>
+</body>
+</html>

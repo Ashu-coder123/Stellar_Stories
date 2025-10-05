@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Weather</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap');
+
+        #bg-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            object-fit: cover;
+        }
+
+        body {
+            color: #f0f0f0;
+            font-family: 'Baloo 2', cursive;
+            margin: 0;
+            text-align: center;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background-color: rgba(12, 20, 69, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background-color: rgba(26, 35, 126, 0.8);
+            padding: 40px 50px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 235, 59, 0.5);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #ffeb3b;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.7);
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .button-group a {
+            display: block;
+            background-color: #ffeb3b;
+            color: #0c1445;
+            padding: 15px 30px;
+            margin: 15px 0;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 1.3em;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .button-group a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        }
+        
+        .animated {
+            opacity: 0;
+            animation-duration: 0.8s;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease-out;
+        }
+        .slide-in-up {
+             animation-name: slideInUp;
+        }
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* --- New style for the team name --- */
+        #team-credit {
+            position: fixed;
+            bottom: 15px;
+            right: 20px;
+            font-size: 0.9em;
+            color: #f0f0f0;
+            opacity: 0.6;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop id="bg-video">
+        <source src="background_video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <div class="overlay">
+        <div class="login-container">
+            <h1 class="animated slide-in-up" style="animation-delay: 0.2s;">✨ Welcome! ✨</h1>
+            <p class="animated slide-in-up" style="animation-delay: 0.4s;">Please select your grade level to begin.</p>
+            <div class="button-group">
+                <a href="Webpg.html" class="animated slide-in-up" style="animation-delay: 0.6s;">Elementary School</a>
+                <a href="webpgsec.html" class="animated slide-in-up" style="animation-delay: 0.8s;">Middle School</a>
+                <a href="webpghigh.html" class="animated slide-in-up" style="animation-delay: 1.0s;">High School</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="team-credit">Team: Moon Storm</div>
+
+</body>
+</html>
